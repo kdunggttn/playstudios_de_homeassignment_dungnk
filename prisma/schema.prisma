@@ -1,0 +1,40 @@
+generator client {
+    provider                    = "prisma-client-py"
+    enable_experimental_decimal = true
+    recursive_type_depth        = -1
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model spins_hourly {
+    date        DateTime @db.Timestamp(6)
+    user_id     String   @db.VarChar(7)
+    country     String   @db.VarChar(2)
+    total_spins Int      @db.Integer
+
+    @@id([date, user_id, country])
+}
+
+model purchases {
+    transaction_id String   @id @db.Uuid
+    date           DateTime @db.Timestamp(6)
+    user_id        String   @db.VarChar(7)
+    currency       String   @default("USD") @db.VarChar(3)
+    revenue        Float    @db.DoublePrecision()
+}
+
+model aggregated {
+    date                     DateTime @db.Timestamp(6)
+    user_id                  String   @db.VarChar(7)
+    country                  String?  @db.VarChar(2)
+    total_spins              Int      @db.Integer
+    total_revenue            Float    @db.DoublePrecision()
+    total_purchases          Int      @db.Integer
+    avg_revenue_per_purchase Float    @db.DoublePrecision()
+    total_daily_revenue      Float    @db.DoublePrecision()
+
+    @@id([date, user_id])
+}
